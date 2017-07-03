@@ -14,6 +14,10 @@ char *Substring(char *src, char *dst, int start, int stop);
 int SearchIndexOf(char *src, char *str);
 int ESPRecv(char *data, char *target, unsigned int timeout, bool check);
 
+/*
+ * UART0 for debug purpose
+ * Connects with PC via usb port
+ */
 void CONSUARTConfig()
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
@@ -29,6 +33,9 @@ void CONSUARTConfig()
     UARTStdioConfig(0, 115200, 120000000);
 }
 
+/*
+ * UART3 to connect with ESP8266
+ */
 void ESPUARTConfig()
 {
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
@@ -48,6 +55,9 @@ void ESPUARTConfig()
 	UARTEnable(UART7_BASE);
 }
 
+/*
+ * Write command to UART
+ */
 void SendATCmd(const char *cmd)
 {
 	unsigned int index = 0;
@@ -60,6 +70,9 @@ void SendATCmd(const char *cmd)
 	UARTCharPut(UART7_BASE, '\n');
 }
 
+/*
+ * Write data to UART
+ */
 void SendStr(const char *buffer)
 {
 	unsigned int index = 0;
@@ -70,6 +83,9 @@ void SendStr(const char *buffer)
 	}
 }
 
+/*
+ * Write data to UART
+ */
 void SendPackage(const char *buffer)
 {
 	unsigned int index = 0;
@@ -82,6 +98,9 @@ void SendPackage(const char *buffer)
 	}
 }
 
+/*
+ * Read data from UART with a specific timeout
+ */
 int ESPRecv(char *data, char *target, unsigned int timeout, bool check)
 {
 	unsigned long start = getMilliseconds();
@@ -109,6 +128,11 @@ int ESPRecv(char *data, char *target, unsigned int timeout, bool check)
 	return 0;
 }
 
+
+/*
+ * Read data from UART with a delimeter text (e.g OK)
+ * If the content match with syntax expectation, the result is true
+ */
 bool ESPRecv_Find(char *data, char *target, unsigned int timeout, bool check)
 {
 	ESPRecv(data, target, timeout, check);
@@ -121,6 +145,9 @@ bool ESPRecv_Find(char *data, char *target, unsigned int timeout, bool check)
 	return false;
 }
 
+/*
+ * Read data from UART with more complex syntax
+ */
 bool ESPRecv_FindAndFilter(char *buffer, char *target, char *begin, char *end, unsigned int timeout, bool check, char *data)
 {
 	memset(buffer, 0, sizeof(buffer));
@@ -228,6 +255,9 @@ bool CIPCLOSEesp(char *buffer)
 	return ESPRecv_Find(buffer, "OK", 5000, true);
 }
 
+/*
+ * Setup server mode with specific waiting port
+ */
 bool CIPSERVEResp(char* buffer, int mode, int port)
 {
 	memset(cmdBuffer, 0, sizeof(cmdBuffer));
@@ -244,6 +274,11 @@ bool CIPSERVEResp(char* buffer, int mode, int port)
 	return ESPRecv_Find(buffer, "OK", 5000, true);
 }
 
+/*
+ * Send data to connection via CIPSEND command
+ * @buffer is receiving buffer from UART
+ * @content is the content to send to connection
+ */
 bool CIPSENDesp(char *buffer, char *content, int len, int id, char *flag)
 {
 	memset(cmdBuffer, 0, sizeof(cmdBuffer));
@@ -288,6 +323,9 @@ bool CIPSTOesp(char *buffer)
 	return ESPRecv_Find(buffer, "OK", 2000, true);
 }
 
+/*
+ * Get a sub-char buffer from another buffer with specific length
+ */
 char *Substring(char *src, char *dst, int start, int stop)
 {
 	int len = stop - start;
@@ -296,6 +334,9 @@ char *Substring(char *src, char *dst, int start, int stop)
 	return dst;
 }
 
+/*
+ * Finds position of a sub-string in a string
+ */
 int SearchIndexOf(char *src, char *str)
 {
    int i, j, firstOcc;
