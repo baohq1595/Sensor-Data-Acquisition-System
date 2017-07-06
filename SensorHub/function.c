@@ -283,17 +283,11 @@ bool CIPSENDesp(char *buffer, char *content, int len, char *flag)
 {
 	memset(cmdBuffer, 0, sizeof(cmdBuffer));
 	char len_str[5];
-//	char id_str[2];
 	bool isSendOK = false;
-
-//	itoa(id, id_str);
 	itoa(len, len_str);
 
 	char* AT_CMD_SEND = "AT+CIPSEND=";
-//	char* comma = ",";
 	strcpy(cmdBuffer, AT_CMD_SEND);
-//	strcat(cmdBuffer, id_str);
-//	strcat(cmdBuffer, comma);
 	strcat(cmdBuffer, len_str);
 
 	while(!isSendOK)
